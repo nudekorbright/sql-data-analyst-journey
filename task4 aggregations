@@ -1,0 +1,45 @@
+
+-- TASK 4: AGGREGATIONS
+-- Business Scenario: Finance team needs summary numbers
+-- from the orders and products data
+-- ============================================================
+ 
+-- Q1: Count the total number of orders in the database
+SELECT
+  COUNT(*) AS total_orders
+FROM orders;
+ 
+-- Q2: Find the total revenue from all order items
+-- (unit_price multiplied by quantity)
+SELECT
+  ROUND(SUM(unit_price * quantity), 2) AS total_revenue
+FROM order_items;
+ 
+-- Q3: Find the average product price across all products
+SELECT
+  ROUND(AVG(price), 2) AS average_product_price
+FROM products;
+ 
+-- Q4: Find the most expensive and cheapest product price
+SELECT
+  MAX(price) AS most_expensive_product,
+  MIN(price) AS cheapest_product
+FROM products;
+ 
+-- Q5: Count how many products exist in each category
+SELECT
+  category,
+  COUNT(*) AS total_products
+FROM products
+GROUP BY category
+ORDER BY total_products DESC;
+ 
+-- BONUS: Full revenue summary in one query
+SELECT
+  COUNT(DISTINCT order_id)                    AS total_orders,
+  COUNT(DISTINCT product_id)                  AS total_products_sold,
+  ROUND(SUM(unit_price * quantity), 2)        AS total_revenue,
+  ROUND(AVG(unit_price * quantity), 2)        AS avg_order_item_value,
+  ROUND(MAX(unit_price * quantity), 2)        AS highest_order_item,
+  ROUND(MIN(unit_price * quantity), 2)        AS lowest_order_item
+FROM order_items;
