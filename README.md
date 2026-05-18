@@ -55,8 +55,8 @@ Custom built Marketing Analytics Database:
 - [x] Task 1 — SELECT Basics
 - [x] Task 2 — WHERE Clause
 - [x] Task 3 — ORDER BY and LIMIT
-- [ ] Task 4 — Aggregations
-- [ ] Task 5 — GROUP BY and HAVING
+- [x] Task 4 — Aggregations
+- [x] Task 5 — GROUP BY and HAVING
 
 ### 🟡 Intermediate
 - [ ] Task 6 — JOINs
@@ -79,9 +79,9 @@ Custom built Marketing Analytics Database:
 |------|-------|--------|
 | Task 1 | SELECT Basics | ✅ Complete |
 | Task 2 | WHERE Clause | ✅ Complete |
-| Task 3 | ORDER BY and LIMIT | 🔄 In Progress |
-| Task 4 | Aggregations | ⏳ Upcoming |
-| Task 5 | GROUP BY and HAVING | ⏳ Upcoming |
+| Task 3 | ORDER BY and LIMIT | Complete |
+| Task 4 | Aggregations | Complete |
+| Task 5 | GROUP BY and HAVING |Complete|
 | Task 6 | JOINs | ⏳ Upcoming |
 | Task 7 | CASE Statements | ⏳ Upcoming |
 | Task 8 | Data Cleaning | ⏳ Upcoming |
