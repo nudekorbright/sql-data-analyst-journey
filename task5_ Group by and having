@@ -1,0 +1,63 @@
+
+-- TASK 5: GROUP BY AND HAVING
+-- Business Scenario: Marketing team wants grouped summaries
+-- to understand customer distribution
+-- ============================================================
+ 
+-- Q1: Count how many customers come from each country
+SELECT
+  country,
+  COUNT(*) AS total_customers
+FROM customers
+GROUP BY country
+ORDER BY total_customers DESC;
+ 
+-- Q2: Count how many customers are male and how many female
+SELECT
+  gender,
+  COUNT(*) AS total_customers
+FROM customers
+GROUP BY gender;
+ 
+-- Q3: Show only countries that have MORE than 3 customers
+SELECT
+  country,
+  COUNT(*) AS total_customers
+FROM customers
+GROUP BY country
+HAVING COUNT(*) > 3
+ORDER BY total_customers DESC;
+ 
+-- Q4: Find the average age of customers in each country
+-- ordered by youngest average age first
+SELECT
+  country,
+  ROUND(AVG(age), 1) AS average_age
+FROM customers
+GROUP BY country
+ORDER BY average_age ASC;
+ 
+-- Q5: Count customers by status — active vs inactive
+SELECT
+  status,
+  COUNT(*) AS total_customers
+FROM customers
+GROUP BY status;
+ 
+-- BONUS: Country summary with multiple aggregations
+SELECT
+  country,
+  COUNT(*)                          AS total_customers,
+  ROUND(AVG(age), 1)                AS avg_age,
+  MIN(age)                          AS youngest,
+  MAX(age)                          AS oldest,
+  SUM(CASE WHEN gender = 'Male'
+    THEN 1 ELSE 0 END)              AS male_count,
+  SUM(CASE WHEN gender = 'Female'
+    THEN 1 ELSE 0 END)              AS female_count,
+  SUM(CASE WHEN status = 'active'
+    THEN 1 ELSE 0 END)              AS active_count
+FROM customers
+GROUP BY country
+HAVING COUNT(*) > 2
+ORDER BY total_customers DESC
