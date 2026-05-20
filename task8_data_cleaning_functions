@@ -1,0 +1,78 @@
+-- TASK 8: DATA CLEANING FUNCTIONS
+-- Business Scenario: Raw data has issues — nulls, wrong
+-- formats and messy text that need to be fixed before analysis
+-- ============================================================
+ 
+-- Q1: Clean customer names — trim whitespace
+-- and standardize case
+SELECT
+  customer_id,
+  TRIM(first_name)                            AS clean_first_name,
+  TRIM(last_name)                             AS clean_last_name,
+  UPPER(email)                                AS email_upper,
+  LOWER(email)                                AS email_lower,
+  LENGTH(first_name)                          AS name_length
+FROM customers;
+ 
+-- Q2: Handle NULL phone numbers gracefully
+SELECT
+  customer_id,
+  first_name,
+  last_name,
+  COALESCE(phone, 'No Phone Provided')        AS contact_phone,
+  COALESCE(email, 'No Email Provided')        AS contact_email
+FROM customers;
+ 
+-- Q3: Extract parts of email addresses
+SELECT
+  customer_id,
+  first_name,
+  email,
+  SUBSTRING_INDEX(email, '@', 1)              AS email_username,
+  SUBSTRING_INDEX(email, '@', -1)             AS email_domain
+FROM customers
+WHERE email IS NOT NULL;
+ 
+-- Q4: Fix data types — cast prices to proper format
+SELECT
+  product_id,
+  product_name,
+  CAST(price AS DECIMAL(10,2))                AS price_formatted,
+  CAST(cost AS DECIMAL(10,2))                 AS cost_formatted,
+  ROUND(price - cost, 2)                      AS profit_per_unit,
+  ROUND((price - cost) / price * 100, 2)      AS profit_margin_pct
+FROM products
+ORDER BY profit_margin_pct DESC;
+ 
+-- Q5: Find and flag potential duplicate customers
+-- based on email address
+SELECT
+  email,
+  COUNT(*) AS occurrence_count
+FROM customers
+WHERE email IS NOT NULL
+GROUP BY email
+HAVING COUNT(*) > 1;
+ 
+-- BONUS: Complete data quality report
+SELECT
+  'customers'                                 AS table_name,
+  COUNT(*)                                    AS total_rows,
+  COUNT(*) - COUNT(first_name)                AS missing_first_name,
+  COUNT(*) - COUNT(last_name)                 AS missing_last_name,
+  COUNT(*) - COUNT(email)                     AS missing_email,
+  COUNT(*) - COUNT(phone)                     AS missing_phone,
+  COUNT(*) - COUNT(country)                   AS missing_country,
+  COUNT(*) - COUNT(age)                       AS missing_age
+FROM customers
+UNION ALL
+SELECT
+  'orders',
+  COUNT(*),
+  COUNT(*) - COUNT(customer_id),
+  COUNT(*) - COUNT(order_date),
+  COUNT(*) - COUNT(status),
+  COUNT(*) - COUNT(payment_method),
+  COUNT(*) - COUNT(campaign_id),
+  COUNT(*) - COUNT(rep_id)
+FROM orders;
