@@ -1,0 +1,162 @@
+-- TASK 10: SUBQUERIES AND CTEs
+-- Business Scenario: Complex business questions that require
+-- breaking analysis into clear logical steps
+-- ============================================================
+ 
+-- Q1: SUBQUERY — Find customers who spent
+-- above the average customer spending
+SELECT
+  c.customer_id,
+  CONCAT(c.first_name, ' ', c.last_name)      AS customer_name,
+  c.country,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS total_spent
+FROM customers c
+JOIN orders o       ON o.customer_id  = c.customer_id
+JOIN order_items oi ON oi.order_id    = o.order_id
+GROUP BY
+  c.customer_id,
+  c.first_name,
+  c.last_name,
+  c.country
+HAVING total_spent > (
+  SELECT AVG(customer_total)
+  FROM (
+    SELECT
+      o2.customer_id,
+      SUM(oi2.unit_price * oi2.quantity) AS customer_total
+    FROM orders o2
+    JOIN order_items oi2 ON oi2.order_id = o2.order_id
+    GROUP BY o2.customer_id
+  ) avg_table
+)
+ORDER BY total_spent DESC;
+ 
+-- Q2: SUBQUERY — Find the most expensive product
+-- in each category
+SELECT
+  product_name,
+  category,
+  price
+FROM products p1
+WHERE price = (
+  SELECT MAX(price)
+  FROM products p2
+  WHERE p2.category = p1.category
+)
+ORDER BY price DESC;
+ 
+-- Q3: CTE — Monthly revenue with running total
+WITH monthly_revenue AS (
+  SELECT
+    DATE_FORMAT(o.order_date, '%Y-%m')        AS month,
+    YEAR(o.order_date)                        AS year,
+    MONTHNAME(o.order_date)                   AS month_name,
+    ROUND(SUM(oi.unit_price * oi.quantity),2) AS revenue,
+    COUNT(DISTINCT o.order_id)                AS total_orders
+  FROM orders o
+  JOIN order_items oi ON oi.order_id = o.order_id
+  GROUP BY
+    DATE_FORMAT(o.order_date, '%Y-%m'),
+    YEAR(o.order_date),
+    MONTHNAME(o.order_date)
+)
+SELECT
+  month,
+  year,
+  month_name,
+  revenue,
+  total_orders,
+  SUM(revenue) OVER (
+    ORDER BY month
+    ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW
+  )                                           AS cumulative_revenue
+FROM monthly_revenue
+ORDER BY month;
+ 
+-- Q4: CTE — Campaign performance summary
+WITH campaign_totals AS (
+  SELECT
+    c.campaign_id,
+    c.campaign_name,
+    c.channel,
+    c.budget,
+    COUNT(DISTINCT o.order_id)                AS total_orders,
+    COUNT(DISTINCT o.customer_id)             AS total_customers,
+    ROUND(SUM(oi.unit_price * oi.quantity),2) AS total_revenue
+  FROM campaigns c
+  JOIN orders o       ON o.campaign_id  = c.campaign_id
+  JOIN order_items oi ON oi.order_id    = o.order_id
+  GROUP BY
+    c.campaign_id,
+    c.campaign_name,
+    c.channel,
+    c.budget
+)
+SELECT
+  campaign_name,
+  channel,
+  budget                                      AS amount_spent,
+  total_orders,
+  total_customers,
+  total_revenue,
+  ROUND(total_revenue / budget, 2)            AS ROAS,
+  ROUND(budget / total_customers, 2)          AS CAC,
+  ROUND(total_revenue / total_orders, 2)      AS AOV,
+  CASE
+    WHEN ROUND(total_revenue / budget, 2) >= 3
+      THEN 'Profitable'
+    WHEN ROUND(total_revenue / budget, 2) >= 1
+      THEN 'Breaking Even'
+    ELSE 'Losing Money'
+  END                                         AS campaign_health
+FROM campaign_totals
+ORDER BY ROAS DESC;
+ 
+-- Q5: CHAINED CTEs — Customer journey analysis
+WITH customer_orders AS (
+  SELECT
+    o.customer_id,
+    COUNT(DISTINCT o.order_id)                AS total_orders,
+    MIN(o.order_date)                         AS first_order,
+    MAX(o.order_date)                         AS last_order,
+    ROUND(SUM(oi.unit_price * oi.quantity),2) AS lifetime_value
+  FROM orders o
+  JOIN order_items oi ON oi.order_id = o.order_id
+  GROUP BY o.customer_id
+),
+customer_segments AS (
+  SELECT
+    customer_id,
+    total_orders,
+    first_order,
+    last_order,
+    lifetime_value,
+    DATEDIFF(NOW(), last_order)               AS days_since_last_order,
+    CASE
+      WHEN lifetime_value >= 500  THEN 'VIP'
+      WHEN lifetime_value >= 200  THEN 'Loyal'
+      WHEN lifetime_value >= 100  THEN 'Regular'
+      ELSE 'New'
+    END                                       AS value_segment
+  FROM customer_orders
+)
+SELECT
+  c.first_name,
+  c.last_name,
+  c.country,
+  cs.total_orders,
+  cs.first_order,
+  cs.last_order,
+  cs.days_since_last_order,
+  cs.lifetime_value,
+  cs.value_segment,
+  CASE
+    WHEN cs.days_since_last_order > 180 THEN 'Churned'
+    WHEN cs.days_since_last_order > 90  THEN 'At Risk'
+    WHEN cs.days_since_last_order > 60  THEN 'Needs Attention'
+    ELSE 'Active'
+  END                                         AS customer_health
+FROM customer_segments cs
+JOIN customers c ON c.customer_id = cs.customer_id
+ORDER BY cs.lifetime_value DESC
