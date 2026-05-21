@@ -1,0 +1,358 @@
+-- ============================================================
+--   PORTFOLIO PROJECT 1: PRODUCT ANALYTICS OVERVIEW
+--   Request from Management — Dashboard Development
+--   Database: marketing_analytics
+--   Analyst: Nudekor Bright
+--   Date: May 2026
+-- ============================================================
+
+-- ============================================================
+-- REPORT 1: REVENUE BY COUNTRY
+-- "Top performing regions with corresponding revenue"
+-- ============================================================
+
+SELECT
+  c.country,
+  r.region_name,
+  COUNT(DISTINCT c.customer_id)               AS total_customers,
+  COUNT(DISTINCT o.order_id)                  AS total_orders,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS total_revenue,
+  ROUND(SUM((oi.unit_price - p.cost)
+    * oi.quantity), 2)                        AS total_profit,
+  ROUND(AVG(oi.unit_price * oi.quantity), 2)  AS avg_order_value,
+  ROUND(SUM(oi.unit_price * oi.quantity)
+    * 100.0 /
+    SUM(SUM(oi.unit_price * oi.quantity))
+    OVER (), 2)                               AS pct_of_total_revenue,
+  RANK() OVER (
+    ORDER BY SUM(oi.unit_price * oi.quantity) DESC
+  )                                           AS revenue_rank
+FROM customers c
+JOIN regions r      ON r.region_id    = c.region_id
+JOIN orders o       ON o.customer_id  = c.customer_id
+JOIN order_items oi ON oi.order_id    = o.order_id
+JOIN products p     ON p.product_id   = oi.product_id
+GROUP BY c.country, r.region_name
+ORDER BY total_revenue DESC;
+
+
+-- ============================================================
+-- REPORT 2: REVENUE BY DATE AND YEAR
+-- "Comparative trends over time"
+-- ============================================================
+
+WITH monthly_revenue AS (
+  SELECT
+    YEAR(o.order_date)                        AS year,
+    MONTH(o.order_date)                       AS month_num,
+    MONTHNAME(o.order_date)                   AS month_name,
+    COUNT(DISTINCT o.order_id)                AS total_orders,
+    COUNT(DISTINCT o.customer_id)             AS unique_customers,
+    ROUND(SUM(oi.unit_price * oi.quantity),2) AS monthly_revenue,
+    ROUND(SUM((oi.unit_price - p.cost)
+      * oi.quantity), 2)                      AS monthly_profit
+  FROM orders o
+  JOIN order_items oi ON oi.order_id   = o.order_id
+  JOIN products p     ON p.product_id  = oi.product_id
+  GROUP BY
+    YEAR(o.order_date),
+    MONTH(o.order_date),
+    MONTHNAME(o.order_date)
+)
+SELECT
+  year,
+  month_num,
+  month_name,
+  total_orders,
+  unique_customers,
+  monthly_revenue,
+  monthly_profit,
+  LAG(monthly_revenue) OVER (
+    ORDER BY year, month_num)                 AS prev_month_revenue,
+  ROUND(
+    (monthly_revenue -
+      LAG(monthly_revenue) OVER (
+        ORDER BY year, month_num))
+    * 100.0
+    / NULLIF(LAG(monthly_revenue) OVER (
+        ORDER BY year, month_num), 0)
+  , 2)                                        AS MoM_growth_pct,
+  SUM(monthly_revenue) OVER (
+    PARTITION BY year
+    ORDER BY month_num
+    ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW
+  )                                           AS ytd_revenue
+FROM monthly_revenue
+ORDER BY year, month_num;
+
+
+-- ============================================================
+-- REPORT 3: PROFIT AND UNIT SALES YEAR OVER YEAR
+-- "High level summary of YoY growth"
+-- ============================================================
+
+WITH yearly_stats AS (
+  SELECT
+    YEAR(o.order_date)                        AS year,
+    COUNT(DISTINCT o.order_id)                AS total_orders,
+    COUNT(DISTINCT o.customer_id)             AS unique_customers,
+    SUM(oi.quantity)                          AS total_units_sold,
+    ROUND(SUM(oi.unit_price * oi.quantity),2) AS total_revenue,
+    ROUND(SUM((oi.unit_price - p.cost)
+      * oi.quantity), 2)                      AS total_profit,
+    ROUND(AVG(oi.unit_price * oi.quantity),2) AS avg_order_value
+  FROM orders o
+  JOIN order_items oi ON oi.order_id   = o.order_id
+  JOIN products p     ON p.product_id  = oi.product_id
+  GROUP BY YEAR(o.order_date)
+)
+SELECT
+  year,
+  total_orders,
+  unique_customers,
+  total_units_sold,
+  total_revenue,
+  total_profit,
+  avg_order_value,
+  ROUND(total_profit / total_revenue * 100, 2) AS profit_margin_pct,
+  LAG(total_revenue) OVER (ORDER BY year)      AS prev_year_revenue,
+  LAG(total_profit) OVER (ORDER BY year)       AS prev_year_profit,
+  LAG(total_units_sold) OVER (ORDER BY year)   AS prev_year_units,
+  ROUND(
+    (total_revenue -
+      LAG(total_revenue) OVER (ORDER BY year))
+    * 100.0
+    / NULLIF(LAG(total_revenue)
+        OVER (ORDER BY year), 0)
+  , 2)                                         AS revenue_YoY_pct,
+  ROUND(
+    (total_profit -
+      LAG(total_profit) OVER (ORDER BY year))
+    * 100.0
+    / NULLIF(LAG(total_profit)
+        OVER (ORDER BY year), 0)
+  , 2)                                         AS profit_YoY_pct,
+  ROUND(
+    (total_units_sold -
+      LAG(total_units_sold) OVER (ORDER BY year))
+    * 100.0
+    / NULLIF(LAG(total_units_sold)
+        OVER (ORDER BY year), 0)
+  , 2)                                         AS units_YoY_pct
+FROM yearly_stats
+ORDER BY year;
+
+
+-- ============================================================
+-- REPORT 4: REVENUE BREAKDOWN BY DISCOUNT BAND
+-- "Distribution of revenue across discount categories"
+-- ============================================================
+
+SELECT
+  CASE
+    WHEN oi.discount_pct = 0
+    THEN '1. No Discount (0%)'
+    WHEN oi.discount_pct BETWEEN 1 AND 10
+    THEN '2. Low Discount (1-10%)'
+    WHEN oi.discount_pct BETWEEN 11 AND 20
+    THEN '3. Medium Discount (11-20%)'
+    ELSE '4. High Discount (20%+)'
+  END                                         AS discount_band,
+  COUNT(DISTINCT o.order_id)                  AS total_orders,
+  SUM(oi.quantity)                            AS total_units,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS revenue_before_discount,
+  ROUND(SUM(oi.unit_price * oi.quantity
+    * (1 - oi.discount_pct / 100)), 2)        AS actual_revenue,
+  ROUND(SUM(oi.unit_price * oi.quantity
+    * (oi.discount_pct / 100)), 2)            AS discount_given,
+  ROUND(SUM(oi.unit_price * oi.quantity
+    * (oi.discount_pct / 100))
+    / SUM(oi.unit_price * oi.quantity)
+    * 100, 2)                                 AS pct_revenue_lost,
+  ROUND(COUNT(DISTINCT o.order_id) * 100.0
+    / SUM(COUNT(DISTINCT o.order_id))
+    OVER (), 2)                               AS pct_of_orders,
+  ROUND(SUM(oi.unit_price * oi.quantity
+    * (1 - oi.discount_pct / 100)) * 100.0
+    / SUM(SUM(oi.unit_price * oi.quantity
+    * (1 - oi.discount_pct / 100)))
+    OVER (), 2)                               AS pct_of_total_revenue
+FROM orders o
+JOIN order_items oi ON oi.order_id = o.order_id
+GROUP BY discount_band
+ORDER BY discount_band;
+
+
+-- ============================================================
+-- REPORT 5: DETAILED TABLE VIEW BY COUNTRY AND YEAR
+-- "Revenue and profit details by country and year"
+-- ============================================================
+
+SELECT
+  c.country,
+  YEAR(o.order_date)                          AS year,
+  COUNT(DISTINCT o.order_id)                  AS total_orders,
+  COUNT(DISTINCT c.customer_id)               AS total_customers,
+  SUM(oi.quantity)                            AS units_sold,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS total_revenue,
+  ROUND(SUM(p.cost * oi.quantity), 2)         AS total_cost,
+  ROUND(SUM((oi.unit_price - p.cost)
+    * oi.quantity), 2)                        AS total_profit,
+  ROUND(SUM((oi.unit_price - p.cost)
+    * oi.quantity)
+    / SUM(oi.unit_price * oi.quantity)
+    * 100, 2)                                 AS profit_margin_pct,
+  ROUND(SUM(oi.unit_price * oi.quantity)
+    / COUNT(DISTINCT o.order_id), 2)          AS avg_order_value,
+  RANK() OVER (
+    PARTITION BY YEAR(o.order_date)
+    ORDER BY SUM(oi.unit_price * oi.quantity)
+    DESC
+  )                                           AS country_rank_by_year
+FROM customers c
+JOIN orders o       ON o.customer_id  = c.customer_id
+JOIN order_items oi ON oi.order_id    = o.order_id
+JOIN products p     ON p.product_id   = oi.product_id
+GROUP BY c.country, YEAR(o.order_date)
+ORDER BY year, total_revenue DESC;
+
+
+-- ============================================================
+-- ANALYST ADDITION 1: CAMPAIGN PERFORMANCE
+-- "Which campaigns drove the most revenue?"
+-- ============================================================
+
+SELECT
+  camp.campaign_name,
+  camp.channel,
+  camp.budget                                 AS ad_spend,
+  COUNT(DISTINCT o.order_id)                  AS total_orders,
+  COUNT(DISTINCT o.customer_id)               AS customers_acquired,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS revenue_generated,
+  ROUND(SUM(oi.unit_price * oi.quantity)
+    / camp.budget, 2)                         AS ROAS,
+  ROUND(camp.budget
+    / COUNT(DISTINCT o.customer_id), 2)       AS CAC,
+  CASE
+    WHEN SUM(oi.unit_price * oi.quantity)
+      / camp.budget >= 3
+    THEN 'Profitable'
+    WHEN SUM(oi.unit_price * oi.quantity)
+      / camp.budget >= 1
+    THEN 'Breaking Even'
+    ELSE 'Losing Money'
+  END                                         AS campaign_status
+FROM campaigns camp
+JOIN orders o       ON o.campaign_id  = camp.campaign_id
+JOIN order_items oi ON oi.order_id    = o.order_id
+GROUP BY
+  camp.campaign_id,
+  camp.campaign_name,
+  camp.channel,
+  camp.budget
+ORDER BY revenue_generated DESC;
+
+
+-- ============================================================
+-- ANALYST ADDITION 2: TOP 10 CUSTOMERS BY LIFETIME VALUE
+-- "Who are our most valuable customers?"
+-- ============================================================
+
+SELECT
+  CONCAT(c.first_name, ' ', c.last_name)      AS customer_name,
+  c.country,
+  COUNT(DISTINCT o.order_id)                  AS total_orders,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS lifetime_value,
+  ROUND(AVG(oi.unit_price * oi.quantity), 2)  AS avg_order_value,
+  MAX(o.order_date)                           AS last_order_date,
+  DATEDIFF(NOW(), MAX(o.order_date))          AS days_since_last_order,
+  CASE
+    WHEN DATEDIFF(NOW(), MAX(o.order_date))
+      > 180 THEN 'At Risk'
+    ELSE 'Active'
+  END                                         AS customer_status,
+  RANK() OVER (
+    ORDER BY SUM(oi.unit_price * oi.quantity)
+    DESC
+  )                                           AS value_rank
+FROM customers c
+JOIN orders o       ON o.customer_id  = c.customer_id
+JOIN order_items oi ON oi.order_id    = o.order_id
+GROUP BY
+  c.customer_id,
+  c.first_name,
+  c.last_name,
+  c.country
+ORDER BY lifetime_value DESC
+LIMIT 10;
+
+
+-- ============================================================
+-- ANALYST ADDITION 3: PRODUCT PERFORMANCE RANKING
+-- "Which products should we promote more?"
+-- ============================================================
+
+SELECT
+  p.product_name,
+  p.category,
+  p.price,
+  p.cost,
+  ROUND(p.price - p.cost, 2)                  AS profit_per_unit,
+  ROUND((p.price - p.cost)
+    / p.price * 100, 2)                       AS margin_pct,
+  SUM(oi.quantity)                            AS units_sold,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS total_revenue,
+  ROUND(SUM((oi.unit_price - p.cost)
+    * oi.quantity), 2)                        AS total_profit,
+  RANK() OVER (
+    ORDER BY SUM((oi.unit_price - p.cost)
+      * oi.quantity) DESC
+  )                                           AS profit_rank,
+  CASE
+    WHEN SUM((oi.unit_price - p.cost)
+      * oi.quantity)
+      / SUM(oi.unit_price * oi.quantity)
+      * 100 >= 70
+    AND SUM(oi.quantity) >= 3
+    THEN 'Promote More'
+    WHEN SUM((oi.unit_price - p.cost)
+      * oi.quantity)
+      / SUM(oi.unit_price * oi.quantity)
+      * 100 >= 50
+    THEN 'Maintain'
+    ELSE 'Review'
+  END                                         AS recommendation
+FROM products p
+JOIN order_items oi ON oi.product_id = p.product_id
+GROUP BY
+  p.product_id,
+  p.product_name,
+  p.category,
+  p.price,
+  p.cost
+ORDER BY total_profit DESC;
+
+
+-- ============================================================
+-- ANALYST ADDITION 4: EXECUTIVE SUMMARY
+-- "One number summary for leadership"
+-- ============================================================
+
+SELECT
+  COUNT(DISTINCT o.order_id)                  AS total_orders,
+  COUNT(DISTINCT c.customer_id)               AS total_customers,
+  ROUND(SUM(oi.unit_price * oi.quantity), 2)  AS total_revenue,
+  ROUND(SUM((oi.unit_price - p.cost)
+    * oi.quantity), 2)                        AS total_profit,
+  ROUND(SUM((oi.unit_price - p.cost)
+    * oi.quantity)
+    / SUM(oi.unit_price * oi.quantity)
+    * 100, 2)                                 AS overall_margin_pct,
+  ROUND(SUM(oi.unit_price * oi.quantity)
+    / COUNT(DISTINCT o.order_id), 2)          AS avg_order_value,
+  SUM(oi.quantity)                            AS total_units_sold
+FROM customers c
+JOIN orders o       ON o.customer_id  = c.customer_id
+JOIN order_items oi ON oi.order_id    = o.order_id
+JOIN products p     ON p.product_id   = oi.product_id;
