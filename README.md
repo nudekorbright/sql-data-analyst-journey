@@ -82,13 +82,13 @@ Custom built Marketing Analytics Database:
 | Task 3 | ORDER BY and LIMIT | Complete |
 | Task 4 | Aggregations | Complete |
 | Task 5 | GROUP BY and HAVING |Complete|
-| Task 6 | JOINs | ⏳ Upcoming |
-| Task 7 | CASE Statements | ⏳ Upcoming |
-| Task 8 | Data Cleaning | ⏳ Upcoming |
-| Task 9 | Date Functions | ⏳ Upcoming |
-| Task 10 | Subqueries and CTEs | ⏳ Upcoming |
-| Task 11 | Window Functions | ⏳ Upcoming |
-| Task 12 | Full Business Challenge | ⏳ Upcoming |
+| Task 6 | JOINs |complete |
+| Task 7 | CASE Statements |complete |
+| Task 8 | Data Cleaning |complete |
+| Task 9 | Date Functions |complete |
+| Task 10 | Subqueries and CTEs |complete |
+| Task 11 | Window Functions |complete |
+| Task 12 | Full Business Challenge |complete|
 
 ---
 
