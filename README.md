@@ -59,17 +59,17 @@ Custom built Marketing Analytics Database:
 - [x] Task 5 — GROUP BY and HAVING
 
 ### 🟡 Intermediate
-- [ ] Task 6 — JOINs
-- [ ] Task 7 — CASE Statements
-- [ ] Task 8 — Data Cleaning Functions
-- [ ] Task 9 — Date Functions
+- [x] Task 6 — JOINs
+- [x] Task 7 — CASE Statements
+- [x] Task 8 — Data Cleaning Functions
+- [x] Task 9 — Date Functions
 
 ### 🟠 Advanced
-- [ ] Task 10 — Subqueries and CTEs
-- [ ] Task 11 — Window Functions
+- [x] Task 10 — Subqueries and CTEs
+- [x] Task 11 — Window Functions
 
 ### 🔴 Expert
-- [ ] Task 12 — Full Business Challenge
+- [x] Task 12 — Full Business Challenge
 
 ---
 
