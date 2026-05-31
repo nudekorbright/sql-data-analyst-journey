@@ -1,0 +1,345 @@
+
+💰 Revenue Metrics
+ROAS — Return On Ad Spend
+Formula  →  Revenue ÷ Ad Spend
+Example  →  $3,000 ÷ $1,000 = 3.0
+
+Meaning:
+For every $1 spent on ads
+you made $3 back
+
+Below 1.0  →  Losing money ❌
+1.0 – 2.0  →  Breaking even ⚠️
+3.0+       →  Profitable ✅
+Industry benchmark: 4.0
+AOV — Average Order Value
+Formula  →  Total Revenue ÷ Total Orders
+Example  →  $5,000 ÷ 100 orders = $50
+
+Meaning:
+The average amount a customer
+spends in a single purchase
+
+Low AOV  →  Customers buying cheap
+             items — hard to profit
+High AOV →  Customers spending more
+             easier to cover ad costs
+
+How to improve:
+→ Bundle products together
+→ Offer upsells at checkout
+→ Minimum order for free shipping
+LTV — Lifetime Value
+Formula  →  AOV × Purchase Frequency
+             × Customer Lifespan
+
+Example  →  $50 × 4 times/year
+             × 2 years = $400
+
+Meaning:
+Total revenue one customer
+brings over their entire
+relationship with the business
+
+Why it matters:
+If LTV is $400 then spending
+$50 to acquire that customer
+is completely worth it 💪
+MRR — Monthly Recurring Revenue
+Formula  →  Total active subscribers
+             × Monthly price
+
+Example  →  100 customers × $29/month
+             = $2,900 MRR
+
+Meaning:
+Predictable revenue coming
+in every single month
+Common in subscription businesses
+ARR — Annual Recurring Revenue
+Formula  →  MRR × 12
+Example  →  $2,900 × 12 = $34,800
+
+Meaning:
+Yearly version of MRR
+Used in investor reports
+and business valuations
+👥 Customer Metrics
+CAC — Customer Acquisition Cost
+Formula  →  Total Ad Spend
+             ÷ New Customers Acquired
+
+Example  →  $1,000 ÷ 20 customers
+             = $50 per customer
+
+Meaning:
+How much it costs to
+get ONE new customer
+
+The golden rule:
+CAC must be significantly
+lower than LTV
+
+CAC $50 + LTV $400 = ✅ Healthy
+CAC $300 + LTV $50 = ❌ Dying
+CVR — Conversion Rate
+Formula  →  Conversions ÷ Visitors
+             × 100
+
+Example  →  50 buyers ÷ 1,000
+             visitors × 100 = 5%
+
+Meaning:
+Percentage of visitors
+who took the desired action
+(purchased, signed up etc)
+
+Industry benchmarks:
+Ecommerce average →  2–4%
+Below 1%          →  Something broken
+Above 5%          →  Excellent
+Churn Rate
+Formula  →  Customers lost
+             ÷ Total customers
+             × 100
+
+Example  →  10 lost ÷ 100 total
+             × 100 = 10% churn
+
+Meaning:
+Percentage of customers
+who stopped buying
+or cancelled subscription
+
+Low churn  →  Customers happy ✅
+High churn →  Product or service
+               problem ❌
+Retention Rate
+Formula  →  100% - Churn Rate
+
+Example  →  100% - 10% = 90%
+
+Meaning:
+Percentage of customers
+who stayed and came back
+
+Opposite of churn
+Higher is always better 💪
+NPS — Net Promoter Score
+Survey question:
+"How likely are you to recommend
+us to a friend? (0–10)"
+
+Promoters  →  Score 9–10
+Passives   →  Score 7–8
+Detractors →  Score 0–6
+
+Formula:
+% Promoters - % Detractors
+
+Above 50  →  Excellent ✅
+0 to 50   →  Good ⚠️
+Below 0   →  Crisis ❌
+📊 Traffic and Campaign Metrics
+CTR — Click Through Rate
+Formula  →  Clicks ÷ Impressions
+             × 100
+
+Example  →  50 clicks ÷ 1,000
+             impressions = 5%
+
+Meaning:
+Percentage of people who
+SAW your ad and CLICKED it
+
+Low CTR  →  Ad creative is weak
+             Wrong audience targeted
+High CTR →  Ad is resonating
+             Audience is right
+CPC — Cost Per Click
+Formula  →  Total Ad Spend ÷ Clicks
+
+Example  →  $500 ÷ 250 clicks = $2
+
+Meaning:
+How much you pay every
+time someone clicks your ad
+
+Lower CPC = more traffic
+for same budget
+CPM — Cost Per Mille
+Formula  →  Ad Spend ÷ Impressions
+             × 1,000
+
+Example  →  $500 ÷ 50,000
+             impressions × 1,000 = $10
+
+Meaning:
+How much it costs to show
+your ad 1,000 times
+
+Used for brand awareness
+campaigns not sales
+Impressions
+Meaning:
+Total number of times
+your ad was SHOWN
+whether clicked or not
+
+High impressions + low CTR
+→ People are seeing ad
+   but not interested
+CPL — Cost Per Lead
+Formula  →  Ad Spend ÷ Leads Generated
+
+Example  →  $1,000 ÷ 50 leads = $20
+
+Meaning:
+How much it costs to get
+one person interested enough
+to give you their contact info
+📈 Performance and Growth Metrics
+MoM — Month Over Month Growth
+Formula  →  (This month - Last month)
+             ÷ Last month × 100
+
+Example  →  ($5,000 - $4,000)
+             ÷ $4,000 × 100 = 25%
+
+Meaning:
+How much something grew
+or shrank vs last month
+
+Positive = Growing ✅
+Negative = Shrinking ❌
+YoY — Year Over Year Growth
+Formula  →  (This year - Last year)
+             ÷ Last year × 100
+
+Meaning:
+Same as MoM but compares
+same month or period
+across two different years
+
+Removes seasonality effect
+More reliable than MoM
+for strategic decisions
+GMV — Gross Merchandise Value
+Meaning:
+Total value of all products
+sold through the platform
+before any fees or returns
+
+Used by marketplaces like
+Jumia, Amazon, Shopify stores
+
+Revenue ≠ GMV
+GMV is bigger — revenue
+is what the company keeps
+Bounce Rate
+Meaning:
+Percentage of visitors who
+landed on a page and LEFT
+immediately without clicking
+anything else
+
+High bounce rate →  Landing page
+                     is not matching
+                     what the ad promised
+Low bounce rate  →  Page is engaging
+                     visitors are exploring
+🎯 Business Goal Metrics
+OKR — Objective and Key Result
+Objective  →  WHERE you want to go
+               "Become the #1 analytics
+                tool in West Africa"
+
+Key Result →  HOW you measure it
+               "Grow revenue 40%"
+               "Hit 500 new customers"
+               "Achieve NPS of 60"
+
+Review:     →  Every quarter
+KPI — Key Performance Indicator
+Meaning:
+The specific metrics you
+track to measure business
+health on an ongoing basis
+
+Different from OKRs:
+KPI   →  Always tracking health
+OKR   →  Time bound stretch goal
+
+Examples of marketing KPIs:
+Monthly revenue
+Customer churn rate
+Website conversion rate
+Email open rate
+ROAS per campaign
+ROI — Return On Investment
+Formula  →  (Revenue - Cost)
+             ÷ Cost × 100
+
+Example  →  ($3,000 - $1,000)
+             ÷ $1,000 × 100 = 200%
+
+Meaning:
+Overall profitability of
+any investment not just ads
+
+ROAS is specifically for ads
+ROI is for any investment
+📧 Email Marketing Metrics
+Open Rate
+Formula  →  Emails opened
+             ÷ Emails delivered × 100
+
+Benchmark → 20–25% is healthy
+Below 15% → Subject lines are weak
+             or wrong audience
+Click Rate
+Formula  →  Email clicks
+             ÷ Emails delivered × 100
+
+Meaning:
+People who opened AND
+clicked something inside
+
+Benchmark → 2–5% is healthy
+Unsubscribe Rate
+Benchmark → Below 0.5% is healthy
+Above 1%  → Content not relevant
+              or emailing too often
+🗂️ The Metrics Cheat Sheet
+METRIC   FORMULA                    TELLS YOU
+──────────────────────────────────────────────
+ROAS     Revenue ÷ Ad Spend         Campaign profit
+AOV      Revenue ÷ Orders           Avg spend/order
+CAC      Spend ÷ New Customers      Cost per customer
+LTV      AOV × Freq × Lifespan      Customer worth
+CVR      Buyers ÷ Visitors × 100    % who purchased
+CTR      Clicks ÷ Impressions × 100 Ad appeal
+CPC      Spend ÷ Clicks             Cost per click
+CPM      Spend ÷ Impressions × 1000 Cost per 1000 views
+MoM      (Now-Before)÷Before × 100  Monthly growth
+YoY      (Now-Before)÷Before × 100  Yearly growth
+Churn    Lost ÷ Total × 100         Customer loss rate
+NPS      % Promoters - % Detractors Customer happiness
+ROI      (Revenue-Cost)÷Cost × 100  Overall profit
+How to Use This in Your Work
+Client asks:             You immediately know:
+─────────────────────────────────────────────
+"Is our campaign       → Calculate ROAS
+working?"                Compare to 3.0 benchmark
+
+"Why are sales low?"   → Check CVR, CTR, Bounce
+                          Find the broken step
+
+"Are we growing?"      → Calculate MoM or YoY
+                          Show the trend
+
+"Is our pricing        → Check AOV vs CAC
+right?"                   LTV must exceed CAC
+
+"Are customers         → Calculate Churn
+happy?"                   and Retention rate
